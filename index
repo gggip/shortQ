@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>考試溫習 短問答題庫 (可打印版)</title>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 使用 Inter 字體 */
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+        /* 隱藏的答案 */
+        .answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        /* 顯示的答案 */
+        .answer.visible {
+            max-height: 500px; /* 給一個足夠的高度 */
+            padding-top: 0.75rem; /* pt-3 */
+            padding-bottom: 0.75rem; /* pb-3 */
+        }
+        /* 隱藏的課節內容 */
+        .lesson-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+        /* 顯示的課節內容 */
+        .lesson-content.visible {
+            max-height: 2000px; /* 給一個足夠的高度 */
+        }
+        /* 旋轉箭頭圖示 */
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+        .rotated {
+            transform: rotate(180deg);
+        }
+        /* 問題按鈕的樣式 */
+        .question-btn {
+            transition: background-color 0.2s ease;
+        }
+        .question-btn.active {
+            background-color: #dbeafe; /* Tailwind blue-100 for science */
+        }
+        .question-btn.active-humanities {
+            background-color: #dcfce7; /* Tailwind green-100 for humanities */
+        }
+
+        /* 打印專用樣式 */
+        @media print {
+            body {
+                font-family: 'Noto Sans TC', sans-serif; /* 確保中文字體打印正常 */
+                background-color: #fff !important;
+                margin: 0;
+                padding: 0;
+                color: #000 !important;
+            }
+
+            /* 隱藏不需要打印的元素 */
+            .print-controls,
+            .lesson-toggle-btn svg.toggle-icon {
+                display: none !important;
+            }
+
+            /* 移除打印時的陰影、邊框和背景色 */
+            .max-w-4xl {
+                max-width: 100% !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .question-toggle-btn,
+            .lesson-toggle-btn {
+                background-color: #fff !important;
+                cursor: default;
+            }
+            .question-btn.active, .question-btn.active-humanities {
+                 background-color: #fff !important;
+            }
+            
+            h1, h2 {
+                color: #000 !important;
+            }
+            h2 {
+                background-color: #eee !important; /* 用淺灰色背景取代彩色背景 */
+            }
+
+            /* 強制展開所有內容 */
+            .lesson-content, .answer {
+                max-height: none !important;
+                overflow: visible !important;
+                display: block !important;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+
+            /* 避免分頁拆開問題和課節標題 */
+            .lesson-toggle-btn, .qna-item {
+                break-inside: avoid-page;
+            }
+            section + section {
+                break-before: page; /* 每個大學科（科學、人文）從新一頁開始 */
+            }
+
+            /* 關鍵：如果 body 有 .print-questions-only class，就隱藏所有答案 */
+            body.print-questions-only .answer {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">考試溫習 短問答題庫</h1>
+        <p class="text-center text-gray-600 mb-6">點擊課節展開題目，再點擊問題顯示答案。</p>
+
+        <!-- 列印控制區域 -->
+        <div class="print-controls p-4 bg-gray-100 rounded-lg mb-8 flex flex-col sm:flex-row gap-3 justify-center">
+            <button id="toggle-all-btn" class="w-full sm:w-auto bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition">全部展開</button>
+            <button id="print-with-answers-btn" class="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">列印 (問題 + 答案)</button>
+            <button id="print-questions-only-btn" class="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">列印 (只有問題)</button>
+        </div>
+
+        <!-- 科學科 Section -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-white bg-blue-600 p-4 rounded-lg mb-4">科學科 (全 5 課)</h2>
+            <div class="space-y-4">
+
+                <!-- 科學科 第1課 -->
+                <div>
+                    <button class="lesson-toggle-btn w-full text-left bg-blue-50 p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-blue-100 focus:outline-none">
+                        <span class="text-lg font-medium text-blue-900">第1課：地球的結構</span>
+                        <svg class="toggle-icon w-5 h-5 text-blue-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="lesson-content pl-4 pr-2 py-2">
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 地球的「三層」結構由外到內是哪三層？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 地殼、地幔、地核。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 哪一種岩石是由火山岩漿冷卻凝固後形成的？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 火成岩。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 哪一種岩石才可能找到「化石」？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 沉積岩。（因為它是由泥沙和生物遺骸一層層壓實而成）</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 哪一種土壤的顆粒最大，排水能力最好？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 沙土。</div>
+                        </div>
+                        <div class="qna-item py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 板塊碰撞會引發哪兩種主要的自然災害？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 地震 和 火山爆發。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 科學科 第2課 -->
+                <div>
+                    <button class="lesson-toggle-btn w-full text-left bg-blue-50 p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-blue-100 focus:outline-none">
+                        <span class="text-lg font-medium text-blue-900">第2課：轉動的地球</span>
+                        <svg class="toggle-icon w-5 h-5 text-blue-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="lesson-content pl-4 pr-2 py-2">
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 地球的「自轉」會造成什麼現象？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 日夜交替（白天和黑夜）。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 為什麼地球會有四季？（請說出兩個主要原因）</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 1. 地球公轉（圍繞太陽轉）； 2. 地軸傾斜。</div>
+                        </div>
+                        <div class="qna-item py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 當香港（北半球）是夏天時，澳洲（南半球）是什麼季節？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 冬天。（因為南北半球的季節相反）</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 科學科 第3課 -->
+                <div>
+                    <button class="lesson-toggle-btn w-full text-left bg-blue-50 p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-blue-100 focus:outline-none">
+                        <span class="text-lg font-medium text-blue-900">第3課：天氣與氣候</span>
+                        <svg class="toggle-icon w-5 h-5 text-blue-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="lesson-content pl-4 pr-2 py-2">
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 「天氣」和「氣候」有什麼分別？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 「天氣」是短時間（例如今天）的狀況；「氣候」是長時間（例如30年）的平均規律。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 什麼是「全球增溫」的主要成因？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 人類燃燒煤、石油等化石燃料，排放大量二氧化碳等溫室氣體。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 什麼是「碳足跡」？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 我們日常活動（如用電、交通）所產生的溫室氣體數量。</div>
+                        </div>
+                        <div class="qna-item py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 哪一種冰（海冰 還是 陸冰）融化會導致海平面明顯上升？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 陸冰（例如南極洲或格陵蘭的冰川）。（因為海冰原本已在水中）</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 科學科 第4課 -->
+                <div>
+                    <button class="lesson-toggle-btn w-full text-left bg-blue-50 p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-blue-100 focus:outline-none">
+                        <span class="text-lg font-medium text-blue-900">第4課：動植物與環境</span>
+                        <svg class="toggle-icon w-5 h-5 text-blue-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="lesson-content pl-4 pr-2 py-2">
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 駱駝的「駝峰」主要是儲存什麼？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 脂肪（在沒有食物時提供能量）。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 仙人掌的「刺」（葉子）有什麼作用？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 減少水分流失。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 熱帶雨林的樹發展出「板根」有什麼作用？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 抓住淺薄的土壤，以固定高大的樹幹，並爭取養分。</div>
+                        </div>
+                        <div class="qna-item py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 北極熊如何適應寒冷的環境？（任答兩項）</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 1. 有厚厚的毛； 2. 有厚厚的皮下脂肪； 3. 中空的毛（幫助保暖）。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 科學科 第5課 -->
+                <div>
+                    <button class="lesson-toggle-btn w-full text-left bg-blue-50 p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-blue-100 focus:outline-none">
+                        <span class="text-lg font-medium text-blue-900">第5課：大自然的平衡</span>
+                        <svg class="toggle-icon w-5 h-5 text-blue-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="lesson-content pl-4 pr-2 py-2">
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 在食物鏈中，能自己製造食物（如植物）的角色叫什麼？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 生產者。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 食物鏈 `草 → 兔子 → 狼` 中，如果兔子數量大量減少，狼的數量會怎樣？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 狼會因為食物（兔子）不足，數量跟著減少。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 獅子和獵豹都會捕食羚羊，牠們之間是什麼關係？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-blue-300 text-gray-700">A: 競爭關係（競爭相同的食物）。</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 人文科 Section -->
+        <section>
+            <h2 class="text-2xl font-semibold text-white bg-green-600 p-4 rounded-lg mb-4">人文科 (全 4 課)</h2>
+            <div class="space-y-4">
+
+                <!-- 人文科 第1課 -->
+                <div>
+                    <button class="lesson-toggle-btn w-full text-left bg-green-50 p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-green-100 focus:outline-none">
+                        <span class="text-lg font-medium text-green-900">第1課：小小考察隊</span>
+                        <svg class="toggle-icon w-5 h-5 text-green-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="lesson-content pl-4 pr-2 py-2">
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 地圖上用來解釋 `H` 代表酒店、`M` 代表港鐵站的工具叫什麼？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 圖例。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 用來判斷東、南、西、北的工具叫什麼？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 方向標（或指南針）。</div>
+                        </div>
+                        <div class="qna-item py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 電子地圖（如手機地圖）比紙本地圖多了什麼主要功能？（任答兩項）</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 1. 搜尋目的地； 2. 規劃路線； 3. 計算所需時間； 4. 自動定位。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 人文科 第2課 -->
+                <div>
+                    <button class="lesson-toggle-btn w-full text-left bg-green-50 p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-green-100 focus:outline-none">
+                        <span class="text-lg font-medium text-green-900">第2課：漫遊香港</span>
+                        <svg class="toggle-icon w-5 h-5 text-green-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="lesson-content pl-4 pr-2 py-2">
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 香港的地勢特徵是什麼？這帶來什麼發展限制？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 特徵是「山多平地少」；限制是「可供發展的土地有限」。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 香港政府如何增加土地供應？（任答兩項）</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 1. 移山填海； 2. 發展新市鎮； 3. 完善交通網絡。</div>
+                        </div>
+                        <div class="qna-item py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 城市發展需要平衡哪三方面的需要？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 社會、經濟、環境。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 人文科 第3課 -->
+                <div>
+                    <button class="lesson-toggle-btn w-full text-left bg-green-50 p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-green-100 focus:outline-none">
+                        <span class="text-lg font-medium text-green-900">第3課：香港的氣候</span>
+                        <svg class="toggle-icon w-5 h-5 text-green-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="lesson-content pl-4 pr-2 py-2">
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 香港哪個季節「潮濕多霧」？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 春天。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 香港哪個季節「炎熱多雨」，並常有颱風和暴雨？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 夏天。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 香港哪個季節「涼快乾燥」，最適合戶外活動但也易有山火？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 秋天。</div>
+                        </div>
+                        <div class="qna-item py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 政府在冬天會開放什麼設施來幫助有需要的人？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 臨時避寒中心。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 人文科 第4課 -->
+                <div>
+                    <button class="lesson-toggle-btn w-full text-left bg-green-50 p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-green-100 focus:outline-none">
+                        <span class="text-lg font-medium text-green-900">第4課：發現地球</span>
+                        <svg class="toggle-icon w-5 h-5 text-green-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="lesson-content pl-4 pr-2 py-2">
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 為什麼熱帶雨林的居民要住「高腳屋」？（任答兩項）</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 為了通風、防潮、防止蛇蟲進入。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 為什麼沙漠地區的傳統房屋「牆壁厚、窗戶小」？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 應對日夜溫差大：白天阻隔熱氣，晚上保持溫度。</div>
+                        </div>
+                        <div class="qna-item border-b border-gray-200 py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 應對自然災害（如地震）有哪兩個主要階段？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 1. 事前預防（如演習、預警系統）； 2. 事後援助（如捐款、重建）。</div>
+                        </div>
+                        <div class="qna-item py-2">
+                            <button class="question-toggle-btn question-btn w-full text-left p-3 rounded-md hover:bg-gray-50 focus:outline-none">Q: 最大的大洲和最大的大洋分別是什麼？</button>
+                            <div class="answer ml-4 pl-4 border-l-4 border-green-300 text-gray-700">A: 亞洲 和 太平洋。</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+    <!-- JavaScript for Toggles and Print -->
+    <script>
+        const lessonToggleButtons = document.querySelectorAll('.lesson-toggle-btn');
+        const questionToggleButtons = document.querySelectorAll('.question-toggle-btn');
+        const allLessonContents = document.querySelectorAll('.lesson-content');
+        const allToggleIcons = document.querySelectorAll('.toggle-icon');
+        const allAnswers = document.querySelectorAll('.answer');
+        
+        // 課節開關
+        lessonToggleButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                const icon = button.querySelector('.toggle-icon');
+                
+                content.classList.toggle('visible');
+                icon.classList.toggle('rotated');
+            });
+        });
+
+        // 問題開關
+        questionToggleButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const answer = button.nextElementSibling;
+                answer.classList.toggle('visible');
+                
+                const isHumanities = button.closest('section').querySelector('h2').classList.contains('bg-green-600');
+                if (isHumanities) {
+                    button.classList.toggle('active-humanities');
+                } else {
+                    button.classList.toggle('active');
+                }
+            });
+        });
+
+        // --- 新增的JS ---
+
+        // 獲取新按鈕
+        const toggleAllBtn = document.getElementById('toggle-all-btn');
+        const printWithAnswersBtn = document.getElementById('print-with-answers-btn');
+        const printQuestionsOnlyBtn = document.getElementById('print-questions-only-btn');
+
+        // 全部展開/收起
+        toggleAllBtn.addEventListener('click', () => {
+            // 檢查是否 *至少有一個* 課節是收起的
+            const isCollapsed = document.querySelector('.lesson-content:not(.visible)');
+            
+            if (isCollapsed) {
+                // 展開全部
+                allLessonContents.forEach(content => content.classList.add('visible'));
+                allToggleIcons.forEach(icon => icon.classList.add('rotated'));
+                toggleAllBtn.textContent = '全部收起';
+            } else {
+                // 收起全部
+                allLessonContents.forEach(content => content.classList.remove('visible'));
+                allToggleIcons.forEach(icon => icon.classList.remove('rotated'));
+                // 同時收起所有答案並移除 active 狀態
+                allAnswers.forEach(answer => answer.classList.remove('visible'));
+                questionToggleButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.classList.remove('active-humanities');
+                });
+                toggleAllBtn.textContent = '全部展開';
+            }
+        });
+
+        // 打印 (連答案)
+        printWithAnswersBtn.addEventListener('click', () => {
+            document.body.classList.remove('print-questions-only');
+            window.print();
+        });
+
+        // 打印 (只有問題)
+        printQuestionsOnlyBtn.addEventListener('click', () => {
+            document.body.classList.add('print-questions-only');
+            window.print();
+        });
+
+        // 打印後，移除 body 的 class，確保網頁顯示正常
+        window.onafterprint = () => {
+            document.body.classList.remove('print-questions-only');
+        };
+
+        // 預設展開第一個課節 (科學科第1課)
+        const firstLessonButton = document.querySelector('.lesson-toggle-btn');
+        if (firstLessonButton) {
+            firstLessonButton.nextElementSibling.classList.add('visible');
+            firstLessonButton.querySelector('.toggle-icon').classList.add('rotated');
+        }
+    </script>
+</body>
+</html>
+
